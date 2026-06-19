@@ -3,7 +3,7 @@ from "./business-member.repository.js";
 
 import { AppError } from "../../../common/middlewares/error.js";
 
-export const list = async (query) => {
+export const list = async (businessId, query) => {
 
   const page =
     Number(query.page || 1);
@@ -11,7 +11,9 @@ export const list = async (query) => {
   const limit =
     Number(query.limit || 10);
 
-  const where = {};
+  const where = {
+    businessId,
+  };
 
   if (query.name?.trim()) {
     where.name = {
@@ -21,7 +23,7 @@ export const list = async (query) => {
   }
 
   if (query.type?.trim()) {
-    where.type = query.type;
+    where.businessId = businessId;
   }
 
   const [rows, total] =
@@ -49,8 +51,8 @@ export const list = async (query) => {
   };
 };
 
-export const detail = async (id) => {
-  return repository.findById(id);
+export const detail = async (businessId) => {
+  return repository.findById(businessId);
 };
 
 export const create = async (payload) => {

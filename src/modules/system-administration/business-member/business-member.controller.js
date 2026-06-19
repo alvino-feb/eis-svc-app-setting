@@ -25,6 +25,7 @@ export const list = async (
     return successListResponse(
       res,
       await service.list(
+        req.params.businessId,
         req.query
       )
     );
@@ -44,6 +45,7 @@ export const detail = async (
     return successListResponse(
       res,
       await service.detail(
+        req.params.businessId,
         req.params.id
       )
     );
@@ -59,7 +61,8 @@ export const create = async (
   next
 ) => {
   try {
-
+    console.log(req.body);
+    
     const payload =
       createBusinessMemberSchema.parse(
         req.body

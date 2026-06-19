@@ -53,7 +53,6 @@ export const list = async (query) => {
 };
 
 export const detail = async (businessId,businessMemberId,userId) => {
-  // console.log(businessId,businessMemberId,userId);
   
     const menus =
       await tree(

@@ -40,8 +40,6 @@ export const detail = async (
   next
 ) => {
   try {
-    // console.log(req.params);
-    // console.log(req.params.businessMemberId);
     return successListResponse(
       res,
       await service.detail(

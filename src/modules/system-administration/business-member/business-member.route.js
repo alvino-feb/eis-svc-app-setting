@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /business-member:
+ * /business-member/{businessId}:
  *   get:
  *     summary: Get Business Member List
  *     tags:
@@ -15,6 +15,13 @@ const router = Router();
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - in: path
+ *         name: businessId
+ *         required: true
+ *         description: Business ID
+ *         schema:
+ *           type: string
+ *           example: "00000000-0000-0000-0000-000000000000"
  *       - in: query
  *         name: page
  *         schema:
@@ -31,7 +38,7 @@ const router = Router();
  *       200:
  *         description: Success
  */
-router.get("/", controller.list);
+router.get("/:businessId", controller.list);
 
 /**
  * @swagger
