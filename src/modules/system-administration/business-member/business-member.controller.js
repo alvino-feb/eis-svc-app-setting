@@ -61,8 +61,7 @@ export const create = async (
   next
 ) => {
   try {
-    console.log(req.body);
-    
+   
     const payload =
       createBusinessMemberSchema.parse(
         req.body

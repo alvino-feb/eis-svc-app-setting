@@ -172,7 +172,7 @@ router.put("/:id", controller.update);
 
 /**
  * @swagger
- * /business-member/{id}:
+ * /business-member/{businessId}/{id}:
  *   delete:
  *     summary: Delete Business Member
  *     description: Soft delete business member by setting deletedAt timestamp
@@ -182,12 +182,17 @@ router.put("/:id", controller.update);
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: businessId
  *         required: true
- *         description: Business Member ID
  *         schema:
  *           type: string
- *           format: uuid
+ *           example: "00000000-0000-0000-0000-000000000000"
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "00000002-0000-0000-0000-000000000000"
  *     responses:
  *       200:
  *         description: Business Member deleted successfully
@@ -210,6 +215,6 @@ router.put("/:id", controller.update);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", controller.remove);
+router.delete("/:businessId/:id", controller.remove);
 
 export default router;

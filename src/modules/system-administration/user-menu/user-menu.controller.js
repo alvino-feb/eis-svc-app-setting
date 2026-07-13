@@ -54,6 +54,26 @@ export const detail = async (
   }
 };
 
+export const listUserMenu = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    return successListResponse(
+      res,
+      await service.listUserMenu(
+        req.params.businessId,
+        req.params.businessMemberId,
+        req.params.userId
+      )
+    );
+
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const create = async (
   req,
   res,
