@@ -9,7 +9,7 @@ export const list = async (businessId, query) => {
     Number(query.page || 1);
 
   const limit =
-    Number(query.limit || 10);
+    Number(query.limit || 25);
 
   const where = {
     businessId,
@@ -33,7 +33,7 @@ export const list = async (businessId, query) => {
         skip: (page - 1) * limit,
         take: limit,
         orderBy: {
-          createdAt: "desc",
+          code: "asc",
         },
       }),
       repository.count(where),
@@ -87,3 +87,4 @@ export const remove = async (
     id
   );
 };
+

@@ -1,9 +1,20 @@
-import repository
+import repository,
+{
+  fetchRoleByMember as fetchRoleByMemberRepository,
+  findRoleById,
+  findByCode,
+  createWithMenu as createWithMenuRepository,
+  updateWithMenu as updateWithMenuRepository,
+  removeWithMenu as removeWithMenuRepository
+}
 from "./role.repository.js";
+
+import * as roleMenuRepository
+from "./role-menu.repository.js";
 
 import { AppError } from "../../../common/middlewares/error.js";
 
-export const list = async (query) => {
+export const list = async (query, businessId) => {
 
   const page =
     Number(query.page || 1);
@@ -11,7 +22,9 @@ export const list = async (query) => {
   const limit =
     Number(query.limit || 10);
 
-  const where = {};
+  const where = {
+    businessId,
+  };
 
   if (query.name?.trim()) {
     where.name = {
@@ -53,8 +66,93 @@ export const detail = async (id) => {
   return repository.findById(id);
 };
 
+export const detailWithMenu = async (businessId, id) => {
+  const role =
+    await findRoleById(businessId, id);
+
+  if (!role) {
+    throw new AppError(
+      "Role not found.",
+      404
+    );
+  }
+
+  const menus =
+    await roleMenuRepository.findMenuByRole(
+      role.businessId,
+      role.businessMemberId,
+      role.id
+    );
+
+  return {
+    ...role,
+    menus,
+  };
+
+};
+
+export const getRoleWithMenu = async (
+  businessId,
+  id
+) => {
+
+  const role =
+    await roleMenuRepository.getRoleWithMenu(
+      businessId,
+      id
+    );
+
+  if (!role) {
+
+    throw new AppError(
+      "Role not found.",
+      404
+    );
+
+  }
+
+  return role;
+
+};
+
+export const detailByMember =
+async (
+  businessId,
+  businessMemberId
+) => {
+
+  return fetchRoleByMemberRepository(
+    businessId,
+    businessMemberId
+  );
+
+};
+
 export const create = async (payload) => {
   return repository.create(payload);
+};
+
+export const createWithMenu =
+async (payload) => {
+  
+  const exists =
+    await findByCode(
+      payload.businessId,
+      payload.code
+    );
+
+  if (exists) {
+    throw new AppError(
+      "Role already exists.",
+      400
+    );
+  }
+  
+  return createWithMenuRepository(
+    payload,
+    payload.menus ?? []
+  );
+
 };
 
 export const update = async (
@@ -65,6 +163,32 @@ export const update = async (
     id,
     payload
   );
+};
+
+export const updateWithMenu = async (
+  payload
+) => {
+
+  const role =
+    await findRoleById(
+      payload.businessId,
+      payload.id
+    );
+
+  if (!role) {
+
+    throw new AppError(
+      "Role not found.",
+      404
+    );
+
+  }
+
+  return updateWithMenuRepository(
+    payload,
+    payload.menus ?? []
+  );
+
 };
 
 export const remove = async (
@@ -84,4 +208,30 @@ export const remove = async (
   return repository.delete(
     id
   );
+};
+
+export const removeWithMenu = async (
+  businessId,
+  id
+) => {
+
+  const exists =
+    await findRoleById(
+      businessId,
+      id
+    );
+
+  if (!exists) {
+
+    throw new AppError(
+      "Role not found.",
+      404
+    );
+
+  }
+
+  return await removeWithMenuRepository(
+    exists
+  );
+
 };

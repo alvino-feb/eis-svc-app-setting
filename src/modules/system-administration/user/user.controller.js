@@ -47,6 +47,35 @@ export const detail = async (
   }
 };
 
+export const detailByMemberAndRole =
+async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+
+    const result =
+      await service.detailByMemberAndRole(
+        req.params.businessId,
+        req.params.businessMemberId,
+        req.params.roleId
+      );
+
+    return successListResponse(
+      res,
+      result
+    );
+
+  } catch (err) {
+
+    next(err);
+
+  }
+
+};
+
 export const create = async (
   req,
   res,
@@ -79,18 +108,11 @@ export const update = async (
   res,
   next
 ) => {
-  try {
-
-    const payload =
-      updateRoleSchema.parse(
-        req.body
-      );
-
+  try {    
     return successUpdatedResponse(
       res,
       await service.update(
-        req.params.id,
-        payload
+        req.body
       )
     );
 
@@ -116,4 +138,45 @@ export const remove = async (
   } catch (err) {
     next(err);
   }
+};
+
+export const createWithRole = async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+
+    return successCreatedResponse(
+      res,
+      await service.createWithRole(
+        req.body
+      )
+    );
+  } catch (err) {
+    next(err);
+  }
+
+};
+
+export const removeWithRole = async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+    await service.removeWithRole(
+      req.params.businessId,
+      req.params.businessMemberId,
+      req.params.id,
+    );
+    
+    return successDeletedResponse(res);
+  }
+  catch (err) {
+    next(err);
+  }
+
 };

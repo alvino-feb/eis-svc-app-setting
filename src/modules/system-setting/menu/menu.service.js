@@ -31,7 +31,7 @@ export const list = async (query) => {
         skip: (page - 1) * limit,
         take: limit,
         orderBy: {
-          createdAt: "desc",
+          seqNo: "asc",
         },
       }),
       repository.count(where),

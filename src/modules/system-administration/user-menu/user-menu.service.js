@@ -1,6 +1,7 @@
 import repository,
 {
-  tree
+  tree,
+  findUserMenu
 }
 from "./user-menu.repository.js";
 
@@ -50,6 +51,18 @@ export const list = async (query) => {
         Math.ceil(total / limit),
     },
   };
+};
+
+export const listUserMenu = async (businessId,businessMemberId,userId) => {
+  
+    const menus =
+      await findUserMenu(
+        businessId,
+        businessMemberId,
+        userId
+      );
+
+    return menus;
 };
 
 export const detail = async (businessId,businessMemberId,userId) => {

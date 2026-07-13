@@ -6,6 +6,7 @@ import businessMemberRoute from "../modules/system-administration/business-membe
 import roleRoute from "../modules/system-administration/role/role.route.js";
 import userRoute from "../modules/system-administration/user/user.route.js"
 import userMenuRoute from "../modules/system-administration/user-menu/user-menu.route.js"
+import userBusinessMember from "../modules/system-administration/user-business-member/user-business-member.route.js"
 
 // system setting
 import groupMenuRoute from "../modules/system-setting/group-menu/group-menu.route.js"
@@ -37,6 +38,11 @@ router.use(
 router.use(
   "/user-menu", 
   userMenuRoute
+);
+
+router.use(
+  "/user-business-member", 
+  userBusinessMember
 );
 
 // system setting
