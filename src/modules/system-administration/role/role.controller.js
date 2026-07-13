@@ -25,6 +25,7 @@ export const list = async (
     return successListResponse(
       res,
       await service.list(
+        req.params.businessId,
         req.query
       )
     );
@@ -53,6 +54,75 @@ export const detail = async (
   }
 };
 
+export const detailWithMenu = async (
+  req,
+  res,
+  next
+) => {
+  try {
+
+    return successListResponse(
+      res,
+      await service.detailWithMenu(
+        req.params.businessId,
+        req.params.id,
+      )
+    );
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getRoleWithMenu = async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+    return successDetailResponse(
+      res,
+      await service.getRoleWithMenu(
+        req.params.businessId,
+        req.params.id,
+      )
+    );
+  }
+  catch (err) {
+    next(err);
+  }
+
+};
+
+export const detailByMember =
+async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+
+    const result =
+      await service.detailByMember(
+        req.params.businessId,
+        req.params.businessMemberId
+      );
+
+    return successListResponse(
+      res,
+      result
+    );
+
+  } catch (err) {
+
+    next(err);
+
+  }
+
+};
+
 export const create = async (
   req,
   res,
@@ -68,6 +138,23 @@ export const create = async (
     return successCreatedResponse(
       res,
       await service.create(payload)
+    );
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const createWithMenu = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    
+    return successCreatedResponse(
+      res,
+      await service.createWithMenu(req.body)
     );
 
   } catch (err) {
@@ -100,6 +187,22 @@ export const update = async (
   }
 };
 
+export const updateWithMenu = async (
+  req,
+  res,
+  next
+) => {
+  try {  
+    return successUpdatedResponse(
+      res,
+      await service.updateWithMenu(req.body)
+    );
+
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const remove = async (
   req,
   res,
@@ -110,6 +213,26 @@ export const remove = async (
     return successDeletedResponse(
       res,
       await service.remove(
+        req.params.id
+      )
+    );
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const removeWithMenu = async (
+  req,
+  res,
+  next
+) => {
+  try {
+
+    return successDeletedResponse(
+      res,
+      await service.removeWithMenu(
+        req.params.businessId,
         req.params.id
       )
     );

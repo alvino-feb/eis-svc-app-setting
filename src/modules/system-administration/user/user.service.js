@@ -1,4 +1,14 @@
-import repository
+import bcrypt from "bcrypt";
+
+import repository,
+{
+  fetchRoleByMemberAndRole,
+  createWithRole as createWithRoleRepo,
+  findByRole,
+  findByUsername,
+  removeWithRole as removeWithRoleRepo,
+  updateWithRole as updateWithRoleRepo
+}
 from "./user.repository.js";
 
 import {
@@ -58,6 +68,21 @@ export const detail = async (id) => {
   return repository.findById(id);
 };
 
+export const detailByMemberAndRole =
+async (
+  businessId,
+  businessMemberId,
+  roleId
+) => {
+
+  return fetchRoleByMemberAndRole(
+    businessId,
+    businessMemberId,
+    roleId
+  );
+
+};
+
 export const create =
   async (payload) => {
 
@@ -72,11 +97,15 @@ export const create =
 };
 
 export const update = async (
-  id,
   payload
-) => {
-  return repository.update(
-    id,
+) => {  
+
+  payload.password =
+  await hashPassword(
+    payload.password
+  );
+
+  return updateWithRoleRepo(
     payload
   );
 };
@@ -98,4 +127,71 @@ export const remove = async (
   return repository.delete(
     id
   );
+};
+
+export const createWithRole = async (
+  payload
+) => {
+
+  const exists =
+    await findByUsername(
+      payload.businessId,
+      payload.username
+    );
+
+  if (exists) {
+
+    throw new AppError(
+      "Username already exists.",
+      400
+    );
+
+  }
+
+  const roleMenus =
+    await findByRole(
+      payload.businessId,
+      payload.businessMemberId,
+      payload.roleId,
+    );
+
+  payload.password =
+    await bcrypt.hash(
+      payload.password,
+      10
+    );
+
+  return createWithRoleRepo(
+    payload,
+    roleMenus
+  );
+
+};
+
+export const removeWithRole = async (
+  businessId,
+  businessMemberId,
+  id
+) => {
+
+  const user =
+    await repository.findById(
+      id
+    );
+
+  if (!user) {
+
+    throw new AppError(
+      "User not found.",
+      404
+    );
+
+  }
+
+  return removeWithRoleRepo(
+    id,
+    businessId,
+    businessMemberId,
+  );
+
 };

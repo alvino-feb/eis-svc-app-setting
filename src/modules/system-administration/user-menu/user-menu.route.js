@@ -131,6 +131,129 @@ router.get(
 
 /**
  * @swagger
+ * /user-menu/list/{businessId}/{businessMemberId}/{userId}:
+ *   get:
+ *     summary: Get User Menu List access
+ *     description: Get list menu for user access
+ *     tags:
+ *       - User Menu
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: businessId
+ *         required: true
+ *         description: Business ID
+ *         schema:
+ *           type: string
+ *           example: "00000000-0000-0000-0000-000000000000"
+ *       - in: path
+ *         name: businessMemberId
+ *         required: true
+ *         description: Business Member ID
+ *         schema:
+ *           type: string
+ *           example: "00000001-0000-0000-0000-000000000000"
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: User ID
+ *         schema:
+ *           type: string
+ *           example: "00000000-0001-0000-0000-000000000000"
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       code:
+ *                         type: string
+ *                         example: SYSTEM_ADMIN
+ *                       name:
+ *                         type: string
+ *                         example: System Administration
+ *                       path:
+ *                         type: string
+ *                         example: ""
+ *                       type:
+ *                         type: string
+ *                         example: P
+ *                       children:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             code:
+ *                               type: string
+ *                               example: MASTER_DATA
+ *                             name:
+ *                               type: string
+ *                               example: Master Data
+ *                             path:
+ *                               type: string
+ *                               example: ""
+ *                             type:
+ *                               type: string
+ *                               example: M
+ *                             children:
+ *                               type: array
+ *                               items:
+ *                                 type: object
+ *                                 properties:
+ *                                   code:
+ *                                     type: string
+ *                                     example: USER
+ *                                   name:
+ *                                     type: string
+ *                                     example: User Management
+ *                                   path:
+ *                                     type: string
+ *                                     example: /user
+ *                                   type:
+ *                                     type: string
+ *                                     example: C
+ *                                   permission:
+ *                                     type: object
+ *                                     properties:
+ *                                       create:
+ *                                         type: boolean
+ *                                         example: true
+ *                                       edit:
+ *                                         type: boolean
+ *                                         example: true
+ *                                       delete:
+ *                                         type: boolean
+ *                                         example: false
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Data Not Found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.get(
+  "/list/:businessId/:businessMemberId/:userId",
+  controller.listUserMenu
+);
+
+/**
+ * @swagger
  * /user-menu:
  *   post:
  *     summary: Create User Menu

@@ -17,6 +17,55 @@ export const findByUsername =
   });
 };
 
+export const findUserMenu = async (
+  businessId,
+  businessMemberId,
+  userId
+) => {
+
+  const menus =
+    await prisma.menu.findMany({
+
+      orderBy: {
+        seqNo: "asc",
+      },
+
+      include: {
+
+        UserMenu: {
+
+          where: {
+            businessId,
+            businessMemberId,
+            userId,
+          },
+
+        },
+
+      },
+
+    });
+
+  return menus.map((menu) => {
+
+    const permission =
+      menu.UserMenu?.[0];
+
+    return {
+      code: menu.code,
+      name: menu.name,
+      parentCode: menu.parentCode,
+      level: menu.level,
+      view: !!permission,
+      create: permission?.create ?? false,
+      edit: permission?.edit ?? false,
+      delete: permission?.delete ?? false,
+    };
+
+  });
+
+};
+
 export const tree = async (
   businessId,
   businessMemberId,
