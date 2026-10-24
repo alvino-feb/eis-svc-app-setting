@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @swagger
- * /user-menu/{businessId}/{businessMemberId}/{userId}:
+ * /user-menu:
  *   get:
  *     summary: Get User Menu Tree
  *     description: Get menu tree and permissions for specific user
@@ -17,27 +17,18 @@ const router = Router();
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: businessId
  *         required: true
- *         description: Business ID
  *         schema:
  *           type: string
  *           example: "00000000-0000-0000-0000-000000000000"
- *       - in: path
- *         name: businessMemberId
- *         required: true
- *         description: Business Member ID
- *         schema:
- *           type: string
- *           example: "00000001-0000-0000-0000-000000000000"
- *       - in: path
+ *       - in: query
  *         name: userId
  *         required: true
- *         description: User ID
  *         schema:
  *           type: string
- *           example: "00000000-0001-0000-0000-000000000000"
+ *           example: "00000000-0000-0001-0000-000000000000"
  *     responses:
  *       200:
  *         description: Success
@@ -124,14 +115,11 @@ const router = Router();
  *       500:
  *         description: Internal Server Error
  */
-router.get(
-  "/:businessId/:businessMemberId/:userId",
-  controller.detail
-);
+router.get("/",controller.detail);
 
 /**
  * @swagger
- * /user-menu/list/{businessId}/{businessMemberId}/{userId}:
+ * /user-menu/list:
  *   get:
  *     summary: Get User Menu List access
  *     description: Get list menu for user access
@@ -140,27 +128,18 @@ router.get(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: businessId
  *         required: true
- *         description: Business ID
  *         schema:
  *           type: string
  *           example: "00000000-0000-0000-0000-000000000000"
- *       - in: path
- *         name: businessMemberId
- *         required: true
- *         description: Business Member ID
- *         schema:
- *           type: string
- *           example: "00000001-0000-0000-0000-000000000000"
- *       - in: path
+ *       - in: query
  *         name: userId
  *         required: true
- *         description: User ID
  *         schema:
  *           type: string
- *           example: "00000000-0001-0000-0000-000000000000"
+ *           example: "00000000-0000-0001-0000-000000000000"
  *     responses:
  *       200:
  *         description: Success
@@ -247,10 +226,7 @@ router.get(
  *       500:
  *         description: Internal Server Error
  */
-router.get(
-  "/list/:businessId/:businessMemberId/:userId",
-  controller.listUserMenu
-);
+router.get("/list",controller.listUserMenu);
 
 /**
  * @swagger
@@ -269,31 +245,47 @@ router.get(
  *             type: object
  *             required:
  *               - businessId
- *               - username
- *               - password
+ *               - businessMemberId
+ *               - userId
+ *               - menuCode
+ *               - canCreate
+ *               - canRead
+ *               - canUpdate
+ *               - canDelete
  *             properties:
  *               businessId:
  *                 type: string
- *               username:
+ *                 example: 00000000-0000-0000-0000-000000000000
+ *               businessMemberId:
  *                 type: string
- *               password:
+ *                 example: 00000001-0000-0000-0000-000000000000
+ *               userId:
  *                 type: string
- *               fullName:
+ *                 example: 00000000-0000-0001-0000-000000000000
+ *               menuCode:
  *                 type: string
- *               phone:
- *                 type: string
+ *                 example: DB10000
+ *               canCreate:
+ *                 type: boolean
+ *                 example: true
+ *               canRead:
+ *                 type: boolean
+ *                 example: true
+ *               canUpdate:
+ *                 type: boolean
+ *                 example: true
+ *               canDelete:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       201:
  *         description: User created successfully
  */
-router.post(
-  "/",
-  controller.create
-);
+router.post("/",controller.create);
 
 /**
  * @swagger
- * /user-menu/{businessId}/{businessMemberId}/{userId}:
+ * /user-menu:
  *   put:
  *     summary: Update User Menu
  *     description: Update existing User Menu data
@@ -302,59 +294,161 @@ router.post(
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
+ *       - in: query
+ *         name: businessId
  *         required: true
- *         description: Role ID
+ *         description: Business ID
  *         schema:
  *           type: string
+ *           example: "00000000-0000-0000-0000-000000000000"
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: Id
+ *         schema:
+ *           type: string
+ *           example: "00000001-0000-0000-0000-000000000000"
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - menuCode
+ *               - canCreate
+ *               - canRead
+ *               - canUpdate
+ *               - canDelete
  *             properties:
- *               businessId:
+ *               menuCode:
  *                 type: string
- *                 example: d4ea1a10-49a9-4ed3-8415-de3b8e619a91
- *               username:
- *                 type: string
- *                 example: ADM
- *               password:
- *                 type: string
- *                 example: Super Administrator
+ *                 example: DB10000
+ *               canCreate:
+ *                 type: boolean
+ *                 example: true
+ *               canRead:
+ *                 type: boolean
+ *                 example: true
+ *               canUpdate:
+ *                 type: boolean
+ *                 example: true
+ *               canDelete:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
- *         description: Role updated successfully
+ *         description: Data updated successfully
  *       404:
- *         description: Role not found
+ *         description: Data not found
  *       400:
  *         description: Validation error
  */
-router.put("/:id", controller.update);
+router.put("/", controller.update);
 
 /**
  * @swagger
- * /user-menu/{businessId}/{businessMemberId}/{userId}:
- *   delete:
- *     summary: Delete User
- *     description: Soft delete user by setting deletedAt timestamp
+ * /user-menus:
+ *   put:
+ *     summary: Save User Menu
+ *     description: Save existing User Menu data
  *     tags:
  *       - User Menu
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
+ *       - in: query
+ *         name: businessId
  *         required: true
- *         description: Role ID
+ *         description: Business ID
  *         schema:
  *           type: string
- *           format: uuid
+ *           example: "00000000-0000-0000-0000-000000000000"
+ *       - in: query
+ *         name: businessMemberId
+ *         required: true
+ *         description: businessMemberId
+ *         schema:
+ *           type: string
+ *           example: "00000001-0000-0000-0000-000000000000"
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         description: userId
+ *         schema:
+ *           type: string
+ *           example: "00000000-0000-0001-0000-000000000000"
+ *       - in: query
+ *         name: type
+ *         required: true
+ *         description: type
+ *         schema:
+ *           type: string
+ *           example: "MEMBER_USER"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - menuCode
+ *               - canCreate
+ *               - canRead
+ *               - canUpdate
+ *               - canDelete
+ *             properties:
+ *               menuCode:
+ *                 type: string
+ *                 example: DB10000
+ *               canCreate:
+ *                 type: boolean
+ *                 example: true
+ *               canRead:
+ *                 type: boolean
+ *                 example: true
+ *               canUpdate:
+ *                 type: boolean
+ *                 example: true
+ *               canDelete:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
- *         description: Role deleted successfully
+ *         description: Data updated successfully
+ *       404:
+ *         description: Data not found
+ *       400:
+ *         description: Validation error
+ */
+router.put("/", controller.saveUserMenus);
+
+/**
+ * @swagger
+ * /user-menu:
+ *   delete:
+ *     summary: Delete User Menu
+ *     description: Soft delete Data setting deletedAt timestamp
+ *     tags:
+ *       - User Menu
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: businessId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "00000000-0000-0000-0000-000000000000"
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "00000001-0000-0000-0000-000000000000"
+ *     responses:
+ *       200:
+ *         description: Data deleted successfully
  *         content:
  *           application/json:
  *             schema:
@@ -365,15 +459,15 @@ router.put("/:id", controller.update);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Role deleted successfully
+ *                   example: Data deleted successfully
  *                 data:
  *                   nullable: true
  *                   example: null
  *       404:
- *         description: Role not found
+ *         description: Data not found
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", controller.remove);
+router.delete("/", controller.remove);
 
 export default router;

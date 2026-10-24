@@ -82,16 +82,11 @@ export const update = async (
 ) => {
   try {
 
-    const payload =
-      updateBusinessSchema.parse(
-        req.body
-      );
-
     return successUpdatedResponse(
       res,
       await service.update(
-        req.params.id,
-        payload
+        req.query.id,
+        req.body
       )
     );
 
@@ -110,7 +105,7 @@ export const remove = async (
     return successDeletedResponse(
       res,
       await service.remove(
-        req.params.id
+        req.query.id
       )
     );
 

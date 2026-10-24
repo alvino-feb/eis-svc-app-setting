@@ -1,7 +1,8 @@
 import { Prisma } from "@prisma/client";
-import { AppError } from "../utils/app-error.js";
+// import { AppError } from "../utils/app-error.js";
+import { AppError } from "../middlewares/appError.js";
 
-export class BaseRepository {
+export class BaseRepositoryV2 {
   constructor(model) {
     this.model = model;
   }

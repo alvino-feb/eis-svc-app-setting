@@ -2,7 +2,8 @@ import prisma
 from "../../../common/constants/prisma.js";
 
 import { BaseRepository } from "../../../common/base/repository.js";
-const ALLOWED_ROLES = ["BA", "CR"];
+
+const ALLOWED_ROLES = ["BUSINESS_ADMINISTRATOR", "CR"];
 
 export default new BaseRepository(
   prisma.user
@@ -17,6 +18,36 @@ export const findByUsername =
     },
   });
 };
+
+export const findByMemberAndType =
+  async (businessId,businessMemberId,type) => {
+    
+    const where = {
+        businessId,
+        type,
+    };
+    
+    if (type !== "BUSINESS_ADMINISTRATOR") {
+        where.businessMemberId = businessMemberId;
+    }
+    
+    return prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          businessId: true,
+          businessMemberId: true,
+          employeeId: true,
+          username: true,
+          type: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+    });
+
+};
+
 
 export const isSuperUser = async (businessId, userId) => {
 
@@ -206,4 +237,38 @@ export const updateWithRole = async (
       isActive: payload.isActive,
     },
   });
+};
+
+export const createUser = async (
+  payload,
+) => {
+
+  const user = await prisma.user.create({
+    data: {
+        businessId,
+        businessMemberId,
+        employeeId: employee.id,
+        username: employeeIdentifier.value,
+        passwordHash,
+
+        Business: {
+            connect: {
+                id: businessId,
+            },
+        },
+
+        BusinessMember: {
+            connect: {
+                id: businessMemberId,
+            },
+        },
+
+        Employee: {
+            connect: {
+                id: employee.id,
+            },
+        },
+    },
+});
+
 };

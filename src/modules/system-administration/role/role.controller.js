@@ -20,12 +20,29 @@ export const list = async (
   res,
   next
 ) => {
+  try {    
+    return successListResponse(
+      res,
+      await service.list(
+        req.query
+      )
+    );
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const listRoleOptions = async (
+  req,
+  res,
+  next
+) => {
   try {
 
     return successListResponse(
       res,
-      await service.list(
-        req.params.businessId,
+      await service.listRoleOptions(
         req.query
       )
     );

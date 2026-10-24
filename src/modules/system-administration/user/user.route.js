@@ -36,6 +36,39 @@ router.get("/", controller.list);
 
 /**
  * @swagger
+ * /user/by-member-type:
+ *   get:
+ *     summary: Get User List by Member and User Type
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: businessId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "00000000-0000-0000-0000-000000000000"
+ *       - in: query
+ *         name: businessMemberId
+ *         schema:
+ *           type: string
+ *           example: "00000001-0000-0000-0000-000000000000"
+ *       - in: query
+ *         name: type
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "BUSINESS_ADMINISTRATOR"
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get("/by-member-type", controller.listByMemberAndType);
+
+/**
+ * @swagger
  * /user/{id}:
  *   get:
  *     summary: Get User Detail
@@ -109,19 +142,31 @@ router.get("/:businessId/member/:businessMemberId/role/:roleId", controller.deta
  *             type: object
  *             required:
  *               - businessId
+ *               - businessMemberId
  *               - username
  *               - password
  *             properties:
  *               businessId:
  *                 type: string
+ *                 example: 00000000-0000-0000-0000-000000000000
+ *               businessMemberId:
+ *                 type: string
+ *                 example: 00000001-0000-0000-0000-000000000000
+ *               type:
+ *                 type: string
+ *                 example: MEMBER_ADMINISTRATOR
+ *               employeeId:
+ *                 type: string
+ *                 example: 00000001-0000-0001-0000-000000000000
  *               username:
  *                 type: string
+ *                 example: member.admin
  *               password:
  *                 type: string
- *               fullName:
- *                 type: string
- *               phone:
- *                 type: string
+ *                 example: Passw0rd
+ *               isActive:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       201:
  *         description: User created successfully

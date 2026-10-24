@@ -25,8 +25,7 @@ export const list = async (
     return successListResponse(
       res,
       await service.list(
-        req.params.businessId,
-        req.query
+        req.query.id
       )
     );
 
@@ -83,7 +82,7 @@ export const update = async (
   next
 ) => {
   try {
-
+    
     const payload =
       updateBusinessMemberSchema.parse(
         req.body
@@ -92,7 +91,7 @@ export const update = async (
     return successUpdatedResponse(
       res,
       await service.update(
-        req.params.id,
+        req.query.id,
         payload
       )
     );

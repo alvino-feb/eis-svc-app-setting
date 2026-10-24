@@ -19,8 +19,7 @@ export const findByUsername =
 
 export const findUserMenu = async (
   businessId,
-  businessMemberId,
-  userId
+  userId,
 ) => {
 
   const menus =
@@ -36,7 +35,6 @@ export const findUserMenu = async (
 
           where: {
             businessId,
-            businessMemberId,
             userId,
           },
 
@@ -57,9 +55,9 @@ export const findUserMenu = async (
       parentCode: menu.parentCode,
       level: menu.level,
       view: !!permission,
-      create: permission?.create ?? false,
-      edit: permission?.edit ?? false,
-      delete: permission?.delete ?? false,
+      create: permission?.canCreate ?? false,
+      update: permission?.canUpdate ?? false,
+      delete: permission?.canDelete ?? false,
     };
 
   });
@@ -67,103 +65,231 @@ export const findUserMenu = async (
 };
 
 export const tree = async (
-  businessId,
-  businessMemberId,
-  userId,
+    businessId,
+    userId,
 ) => {
-  
-  const userMenus =
-    await prisma.userMenu.findMany({
-      where: {
-        businessId,
-        businessMemberId,
-        userId,
-      },
-      include: {
-        Menu: true,
-      },
-      orderBy: {
-        Menu: {
-          seqNo: "asc",
+
+    const userMenus = await prisma.userMenu.findMany({
+        where: {
+            businessId,
+            userId,
         },
-      },
+        include: {
+            Menu: true,
+        },
+        orderBy: {
+            Menu: {
+                seqNo: "asc",
+            },
+        },
     });
 
-  const map = {};
-  const tree = [];
+    const map = {};
+    const tree = [];
 
-  // Build node map
-  userMenus.forEach((um) => {
+    // ==========================================
+    // Build node map
+    // ==========================================
 
-    const menu = um.Menu;
+    userMenus.forEach((um) => {
 
-    map[menu.code] = {
-      code: menu.code,
-      name: menu.name,
-      path: menu.path ?? "",
-      type: menu.type,
-      icon: menu.icon ?? null,
-      seqNo: menu.seqNo,
-    };
+        const menu = um.Menu;
 
-    if (menu.type === "C") {
+        map[menu.code] = {
+            code: menu.code,
+            name: menu.name,
+            path: menu.path ?? "",
+            type: menu.type,
+            icon: menu.icon ?? null,
+            seqNo: menu.seqNo,
 
-      map[menu.code].permission = {
-        create: um.canCreate ?? false,
-        edit: um.canEdit ?? false,
-        delete: um.canDelete ?? false,
-        view: um.canView ?? true,
-      };
+            // IMPORTANT:
+            // semua node punya children terlebih dahulu
+            children: [],
+        };
 
-    } else {
+        // Permission hanya untuk menu C
+        if (menu.type === "C") {
 
-      map[menu.code].children = [];
-
-    }
-
-  });
-
-  // Build hierarchy
-  userMenus.forEach((um) => {
-
-    const menu = um.Menu;
-
-    if (
-      menu.parentCode &&
-      map[menu.parentCode]
-    ) {
-
-      map[
-        menu.parentCode
-      ].children.push(
-        map[menu.code]
-      );
-
-    } else {
-
-      tree.push(
-        map[menu.code]
-      );
-
-    }
-
-  });
-
-  // Remove empty children
-  Object.values(map)
-    .forEach((node) => {
-
-      if (
-        node.children &&
-        node.children.length === 0
-      ) {
-
-        delete node.children;
-
-      }
-
+            map[menu.code].permission = {
+                create: um.canCreate ?? false,
+                edit: um.canEdit ?? false,
+                delete: um.canDelete ?? false,
+                view: um.canView ?? true,
+            };
+        }
     });
 
-  return tree;
+    // ==========================================
+    // Build hierarchy
+    // ==========================================
 
+    userMenus.forEach((um) => {
+
+        const menu = um.Menu;
+        const node = map[menu.code];
+
+        if (!node) {
+            return;
+        }
+
+        // Has parent
+        if (menu.parentCode) {
+
+            const parent = map[menu.parentCode];
+
+            if (parent) {
+
+                parent.children.push(node);
+
+            } else {
+
+                // Parent tidak ditemukan
+                // anggap sebagai root
+                tree.push(node);
+
+            }
+
+        } else {
+
+            // Root node
+            tree.push(node);
+        }
+    });
+
+    // ==========================================
+    // Remove empty children
+    // ==========================================
+
+    Object.values(map).forEach((node) => {
+
+        if (node.children.length === 0) {
+
+            delete node.children;
+
+        }
+    });
+
+    return tree;
+};
+
+export const saveUserMenus = async ({
+    userId,
+    businessId,
+    businessMemberId,
+    menus,
+}) => {
+    if (!Array.isArray(menus)) {
+        const error = new Error("Menus must be an array");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    // Hanya menu leaf yang memiliki permission.
+    const permissions = menus
+        .filter((menu) => menu.type !== "P")
+        .map((menu) => ({
+            businessId,
+            businessMemberId,
+            userId,
+            menuCode: menu.code,
+            canRead: Boolean(menu.view),
+            canCreate: Boolean(menu.create),
+            canUpdate: Boolean(menu.edit),
+            canDelete: Boolean(menu.delete),
+        }));
+
+    const menuCodes = permissions.map((item) => item.menuCode);
+
+    if (new Set(menuCodes).size !== menuCodes.length) {
+        const error = new Error("Duplicate menu codes");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    return prisma.$transaction(async (tx) => {
+        const user = await tx.user.findFirst({
+            where: {
+                id: userId,
+                businessId,
+                ...(businessMemberId
+                    ? { businessMemberId }
+                    : {}),
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!user) {
+            const error = new Error("User not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // Validasi kode menu supaya client tidak bisa
+        // mengirim kode menu yang tidak terdaftar.
+        const validMenus = await tx.menu.findMany({
+            where: {
+                code: {
+                    in: menuCodes,
+                },
+            },
+            select: {
+                code: true,
+            },
+        });
+
+        if (validMenus.length !== menuCodes.length) {
+            const error = new Error(
+                "One or more menu codes are invalid"
+            );
+            error.statusCode = 400;
+            throw error;
+        }
+
+        for (const permission of permissions) {
+            const {
+                userId: permissionUserId,
+                menuCode,
+                ...permissionData
+            } = permission;
+
+            await tx.userMenu.upsert({
+                where: {
+                    userId_menuCode: {
+                        userId: permissionUserId,
+                        menuCode,
+                    },
+                },
+                create: permission,
+                update: {
+                    canRead: permissionData.canRead,
+                    canCreate: permissionData.canCreate,
+                    canUpdate: permissionData.canUpdate,
+                    canDelete: permissionData.canDelete,
+                },
+            });
+        }
+
+        // Hapus permission lama yang tidak lagi ada
+        // dalam daftar menu yang dikirim.
+        await tx.userMenu.deleteMany({
+            where: {
+                userId,
+                businessId,
+                ...(businessMemberId
+                    ? { businessMemberId }
+                    : {}),
+                ...(menuCodes.length > 0
+                    ? { menuCode: { notIn: menuCodes } }
+                    : {}),
+            },
+        });
+
+        return {
+            userId,
+            savedCount: permissions.length,
+        };
+    });
 };

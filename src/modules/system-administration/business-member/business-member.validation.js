@@ -9,6 +9,7 @@ export const createBusinessMemberSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   url: z.string().optional(),
+  init: z.string().optional(),
   isActive: z.boolean().optional(),
 });
 
