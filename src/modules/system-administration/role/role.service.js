@@ -13,53 +13,63 @@ import * as roleMenuRepository
 from "./role-menu.repository.js";
 
 import { AppError } from "../../../common/middlewares/error.js";
+import { buildWhere } from "../../../common/helpers/query.js";
 
-export const list = async (query, businessId) => {
+export const list = async (query) => {
 
-  const page =
-    Number(query.page || 1);
-
-  const limit =
-    Number(query.limit || 10);
-
-  const where = {
-    businessId,
-  };
-
-  if (query.name?.trim()) {
-    where.name = {
-      contains: query.name.trim(),
-      mode: "insensitive",
-    };
-  }
-
-  if (query.type?.trim()) {
-    where.type = query.type;
-  }
+  const where = buildWhere(
+      query,
+      [
+          "businessId"
+      ],
+  );
 
   const [rows, total] =
     await Promise.all([
       repository.findMany({
         where,
-        skip: (page - 1) * limit,
-        take: limit,
         orderBy: {
-          createdAt: "desc",
+          code: "asc",
         },
       }),
-      repository.count(where),
     ]);
 
   return {
     data: rows,
-    meta: {
-      page,
-      limit,
-      total,
-      totalPages:
-        Math.ceil(total / limit),
-    },
   };
+};
+
+export const listRoleOptions = async (query = {}) => {
+
+    const {
+        businessId
+    } = query;
+
+    // ==========================================
+    // VALIDATE PARAMETER
+    // ==========================================
+    if (
+        !businessId
+    ) {
+        return {
+            data: [],
+        };
+    }
+
+    const role = await repository.findMany({
+        where: {
+            businessId,
+        },
+
+        select: {
+            code: true,
+            name: true
+        },
+    });
+
+    return {
+        data: role,
+    };
 };
 
 export const detail = async (id) => {

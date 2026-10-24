@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /role/{businessId}:
+ * /role:
  *   get:
  *     summary: Get Role List
  *     tags:
@@ -15,30 +15,39 @@ const router = Router();
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: businessId
  *         required: true
- *         description: Business Id
  *         schema:
  *           type: string
  *           example: "00000000-0000-0000-0000-000000000000"
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: Success
  */
-router.get("/:businessId", controller.list);
+router.get("/", controller.list);
+
+/**
+ * @swagger
+ * /role/options:
+ *   get:
+ *     summary: Get Role for Option
+ *     tags:
+ *       - Role
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: businessId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "00000000-0000-0000-0000-000000000000"
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get("/options", controller.listRoleOptions);
 
 /**
  * @swagger

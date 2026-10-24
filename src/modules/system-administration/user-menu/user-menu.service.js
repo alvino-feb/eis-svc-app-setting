@@ -53,25 +53,23 @@ export const list = async (query) => {
   };
 };
 
-export const listUserMenu = async (businessId,businessMemberId,userId) => {
+export const listUserMenu = async (query) => {
   
     const menus =
       await findUserMenu(
-        businessId,
-        businessMemberId,
-        userId
+        query.businessId,
+        query.userId
       );
 
     return menus;
 };
 
-export const detail = async (businessId,businessMemberId,userId) => {
+export const detail = async (query) => {
   
     const menus =
       await tree(
-        businessId,
-        businessMemberId,
-        userId
+        query.businessId,
+        query.userId
       );
 
     return menus;
@@ -79,6 +77,10 @@ export const detail = async (businessId,businessMemberId,userId) => {
 
 export const create = async (payload) => {
   return repository.create(payload);
+};
+
+export const saveUserMenus = async (payload) => {
+  return repository.saveUserMenus(payload);
 };
 
 export const update = async (
