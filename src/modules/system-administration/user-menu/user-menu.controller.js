@@ -43,9 +43,7 @@ export const detail = async (
     return successListResponse(
       res,
       await service.detail(
-        req.params.businessId,
-        req.params.businessMemberId,
-        req.params.userId
+        req.query
       )
     );
 
@@ -63,9 +61,7 @@ export const listUserMenu = async (
     return successListResponse(
       res,
       await service.listUserMenu(
-        req.params.businessId,
-        req.params.businessMemberId,
-        req.params.userId
+        req.query
       )
     );
 
@@ -94,6 +90,38 @@ export const create = async (
   } catch (err) {
     next(err);
   }
+};
+
+export const saveUserMenus = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const {
+            businessId,
+            businessMemberId,
+            menus,
+        } = req.body;
+
+        if (!businessId || !businessMemberId) {
+            return res.status(400).json({
+                message:
+                    "Business and Business Member are required",
+            });
+        }
+
+        const result = await service.saveUserMenus({
+            userId,
+            businessId,
+            businessMemberId,
+            menus,
+        });
+
+        return res.status(200).json({
+            message: "User menu permissions saved successfully",
+            data: result,
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const update = async (
@@ -139,3 +167,4 @@ export const remove = async (
     next(err);
   }
 };
+

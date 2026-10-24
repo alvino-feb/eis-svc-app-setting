@@ -1,7 +1,5 @@
 import { Router } from "express";
-
-import * as controller
-from "./business-member.controller.js";
+import * as controller from "./business-member.controller.js";
 
 const router = Router();
 
@@ -18,22 +16,9 @@ const router = Router();
  *       - in: path
  *         name: businessId
  *         required: true
- *         description: Business ID
  *         schema:
  *           type: string
  *           example: "00000000-0000-0000-0000-000000000000"
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: Success
@@ -114,7 +99,7 @@ router.post("/", controller.create);
 
 /**
  * @swagger
- * /business-member/{id}:
+ * /business-member:
  *   put:
  *     summary: Update Business Member
  *     description: Update existing business member data
@@ -123,12 +108,13 @@ router.post("/", controller.create);
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: id
  *         required: true
  *         description: Business Member ID
  *         schema:
  *           type: string
+ *           example: "00000001-0000-0000-0000-000000000000"
  *     requestBody:
  *       required: true
  *       content:
@@ -136,9 +122,6 @@ router.post("/", controller.create);
  *           schema:
  *             type: object
  *             properties:
- *               businessId:
- *                 type: string
- *                 example: d4ea1a10-49a9-4ed3-8415-de3b8e619a91
  *               code:
  *                 type: string
  *                 example: KBBR
@@ -157,6 +140,9 @@ router.post("/", controller.create);
  *               url:
  *                 type: string
  *                 example: kopibara.domain.com
+ *               init:
+ *                 type: string
+ *                 example: INIT
  *               isActive:
  *                  type: boolean
  *                  example: true
@@ -168,7 +154,7 @@ router.post("/", controller.create);
  *       400:
  *         description: Validation error
  */
-router.put("/:id", controller.update);
+router.put("/", controller.update);
 
 /**
  * @swagger

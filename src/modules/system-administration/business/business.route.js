@@ -76,10 +76,10 @@ router.get("/:id", controller.detail);
  *             properties:
  *               name:
  *                 type: string
- *                 example: PT EIS Indonesia
+ *                 example: PT Enterprise System Supply
  *               type:
  *                 type: string
- *                 example: COMPANY
+ *                 example: PT
  *               ownerName:
  *                 type: string
  *                 example: Alvino
@@ -88,16 +88,16 @@ router.get("/:id", controller.detail);
  *                 example: 08123456789
  *               address:
  *                 type: string
- *                 example: Bandung
+ *                 example: Jakarta
  *               nation:
  *                 type: string
  *                 example: Indonesia
  *               province:
  *                 type: string
- *                 example: Jawa Barat
+ *                 example: Jakarta
  *               city:
  *                 type: string
- *                 example: Bandung
+ *                 example: Jakarta
  *               isActive:
  *                 type: boolean
  *                 example: true
@@ -109,7 +109,7 @@ router.post("/", controller.create);
 
 /**
  * @swagger
- * /business/{id}:
+ * /business:
  *   put:
  *     summary: Update Business
  *     description: Update existing business data
@@ -118,12 +118,13 @@ router.post("/", controller.create);
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: id
  *         required: true
  *         description: Business ID
  *         schema:
  *           type: string
+ *           example: "00000000-0000-0000-0000-000000000000"
  *     requestBody:
  *       required: true
  *       content:
@@ -133,10 +134,10 @@ router.post("/", controller.create);
  *             properties:
  *               name:
  *                 type: string
- *                 example: PT EIS Indonesia
+ *                 example: PT Enterprise System Supply
  *               type:
  *                 type: string
- *                 example: COMPANY
+ *                 example: PT
  *               ownerName:
  *                 type: string
  *                 example: Alvino
@@ -145,16 +146,16 @@ router.post("/", controller.create);
  *                 example: 08123456789
  *               address:
  *                 type: string
- *                 example: Bandung
+ *                 example: Jakarta Raya
  *               nation:
  *                 type: string
  *                 example: Indonesia
  *               province:
  *                 type: string
- *                 example: Jawa Barat
+ *                 example: Jakarta
  *               city:
  *                 type: string
- *                 example: Bandung
+ *                 example: Jakarta
  *               isActive:
  *                 type: boolean
  *                 example: true
@@ -166,11 +167,11 @@ router.post("/", controller.create);
  *       400:
  *         description: Validation error
  */
-router.put("/:id", controller.update);
+router.put("/", controller.update);
 
 /**
  * @swagger
- * /business/{id}:
+ * /business:
  *   delete:
  *     summary: Delete Business
  *     description: Soft delete business by setting deletedAt timestamp
@@ -179,13 +180,13 @@ router.put("/:id", controller.update);
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: id
  *         required: true
  *         description: Business ID
  *         schema:
  *           type: string
- *           format: uuid
+ *           example: "00000000-0000-0000-0000-000000000000"
  *     responses:
  *       200:
  *         description: Business deleted successfully
@@ -208,6 +209,6 @@ router.put("/:id", controller.update);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", controller.remove);
+router.delete("/", controller.remove);
 
 export default router;

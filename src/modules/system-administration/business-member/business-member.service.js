@@ -5,49 +5,20 @@ import { AppError } from "../../../common/middlewares/error.js";
 
 export const list = async (businessId, query) => {
 
-  const page =
-    Number(query.page || 1);
-
-  const limit =
-    Number(query.limit || 25);
-
   const where = {
     businessId,
   };
-
-  if (query.name?.trim()) {
-    where.name = {
-      contains: query.name.trim(),
-      mode: "insensitive",
-    };
-  }
-
-  if (query.type?.trim()) {
-    where.businessId = businessId;
-  }
 
   const [rows, total] =
     await Promise.all([
       repository.findMany({
         where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: {
-          code: "asc",
-        },
       }),
       repository.count(where),
     ]);
 
   return {
-    data: rows,
-    meta: {
-      page,
-      limit,
-      total,
-      totalPages:
-        Math.ceil(total / limit),
-    },
+    data: rows
   };
 };
 
@@ -63,6 +34,7 @@ export const update = async (
   id,
   payload
 ) => {
+  
   return repository.update(
     id,
     payload

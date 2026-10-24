@@ -14,6 +14,7 @@ export const list = async (
   res,
   next
 ) => {
+
   try {
 
     return successListResponse(
@@ -33,6 +34,7 @@ export const detail = async (
   res,
   next
 ) => {
+
   try {
 
     return successListResponse(
@@ -45,6 +47,41 @@ export const detail = async (
   } catch (err) {
     next(err);
   }
+};
+
+export const listByMemberAndType =
+async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+    const {
+      businessId,
+      businessMemberId,
+      type,
+    } = req.query;
+    
+
+    const result =
+      await service.listByMemberAndType(
+        businessId,
+        businessMemberId,
+        type,
+      );
+
+    return successListResponse(
+      res,
+      result
+    );
+
+  } catch (err) {
+
+    next(err);
+
+  }
+
 };
 
 export const detailByMemberAndRole =
